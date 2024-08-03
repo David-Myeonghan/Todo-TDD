@@ -6,24 +6,23 @@ type TodoItem = {
     isDone: boolean;
 }
 
-type TodoList = Array<TodoItem>
+export type TodoList = Array<TodoItem>;
 
 type TodoContextType = {
     todoList: TodoList,
     setTodoList: React.Dispatch<SetStateAction<TodoList>>,
 }
 
-export const TodoContext = createContext<TodoContextType | []>([]);
+export const TodoContext = createContext<TodoContextType | undefined>(undefined);
 
 export const TodoContextProvider = ({children}: { children: React.ReactNode }) => {
     const [todoList, setTodoList] = useState<TodoList>([]);
 
     useEffect(() => {
         const storageTodos = getLocalStorageItem('todos');
-        setTodoList(storageTodos)
-
+        if (!storageTodos) return;
+        setTodoList(storageTodos);
     }, [])
-
 
     const value = useMemo(() => ({todoList, setTodoList}), [todoList]);
 
