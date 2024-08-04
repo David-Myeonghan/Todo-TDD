@@ -67,8 +67,15 @@ describe('할 일 수정 - 추가된 밥먹기를 "잠자기"로 변경하면 ro
     await userEvent.dblClick(textElement);
 
     // ASSERT
-    const updatedItem = screen.getAllByRole("textbox");
-    expect(updatedItem).toHaveValue("아침 먹기");
+    const inputElementArray = screen.getAllByRole(
+      "textbox",
+    ) as HTMLInputElement[];
+    expect(inputElementArray.length).toBe(2);
+
+    const hasTypedValue = inputElementArray.some(
+      (inputElement) => inputElement.value === "아침 먹기",
+    );
+    expect(hasTypedValue).toBe(true);
   });
 
   // test('변경된 input 창의 텍스트를 수정후 엔터를 누르면 수정된 텍스트로 item 이 보인다.', () => {
