@@ -7,6 +7,7 @@ interface TodoItemProp {
 }
 
 export default function TodoItem({ item }: TodoItemProp) {
+  const [itemValue, setItemValue] = useState(item.title);
   const [isEditMode, setIsEditMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -26,15 +27,15 @@ export default function TodoItem({ item }: TodoItemProp) {
         className={isEditMode ? "item-label-hidden" : "item-label"}
         htmlFor={item.id}
       >
-        {item.title}
+        {itemValue}
       </label>
       <input
         ref={inputRef}
         id={item.id}
         type="text"
         className={isEditMode ? "item-input" : "item-input-hidden"}
-        value={item.title}
-        onChange={(e) => console.log(e.target.value)}
+        value={itemValue}
+        onChange={(e) => setItemValue(e.target.value)}
         onBlur={() => setIsEditMode(false)}
       />
     </div>

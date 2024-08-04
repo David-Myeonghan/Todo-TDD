@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, prettyDOM, render, screen } from "@testing-library/react";
 import App from "./App";
 import userEvent from "@testing-library/user-event";
 
@@ -53,11 +53,10 @@ describe("초기 렌더링", () => {
 // })
 
 describe('할 일 수정 - 추가된 밥먹기를 "잠자기"로 변경하면 row 의 컨텐츠가 "잠자기"가된다', () => {
-  beforeAll(() => cleanup());
+  afterEach(cleanup);
 
   test("items을 더블클릭하면 item 창이 input으로 변경된다.", async () => {
     render(<App />);
-
     // ACT
     const inputElement = screen.getByPlaceholderText("What needs to be done?");
     await userEvent.type(inputElement, "아침 먹기");
@@ -78,12 +77,28 @@ describe('할 일 수정 - 추가된 밥먹기를 "잠자기"로 변경하면 ro
     expect(hasTypedValue).toBe(true);
   });
 
-  // test('변경된 input 창의 텍스트를 수정후 엔터를 누르면 수정된 텍스트로 item 이 보인다.', () => {
-  //     const inputElement = screen.getByRole('input');
-  //     userEvent.type(inputElement, '밥먹기');
-  //
-  //     // Enter
-  // })
+  test("변경된 input 창의 텍스트를 수정후 엔터를 누르면 수정된 텍스트로 item 이 보인다.", async () => {
+    render(<App />);
+    // ACT
+    const inputElement = screen.getByPlaceholderText("What needs to be done?");
+    await userEvent.type(inputElement, "아침 먹기");
+    await userEvent.type(inputElement, "{enter}");
+
+    const textElement = screen.getByText("아침 먹기");
+    await userEvent.dblClick(textElement);
+
+    // input value 수정
+    const typedInputElement = screen.getByDisplayValue("아침 먹기");
+    await userEvent.clear(typedInputElement);
+    await userEvent.type(typedInputElement, "점심 먹기");
+    await userEvent.type(typedInputElement, "{enter}");
+
+    // 수정된 값 확인
+    const changedText = screen.getByText("점심 먹기");
+    expect(changedText).toBeInTheDocument();
+
+    console.log(prettyDOM());
+  });
 });
 
 // describe('할 일 삭제', ()=> {
