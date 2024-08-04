@@ -153,29 +153,35 @@ describe("할 일 삭제", () => {
 
     // ASSERT
     expect(screen.queryByText("저녁 먹기")).toBeNull();
-    console.log(prettyDOM());
   });
 });
 
-// describe('할 일 완료', ()=> {
+describe("할 일 완료", () => {
+  test("아이템 촤측 원(체크박스)을 클릭하면, 아이템 글자위에 취소선이 그어진다. (남은 할일 아이템 숫자가 1 감소한다.)", async () => {
+    cleanup();
+    render(<App />);
 
-//   render(<App />);
+    const inputElement = screen.getByPlaceholderText("What needs to be done?");
+    await userEvent.type(inputElement, "저녁 먹기");
+    await userEvent.type(inputElement, "{enter}");
 
-//   test('아이템 촤측 원을 클릭하면, 아이템 글자위에 취소선이 그어진다. 남은 할일 아이템 숫자가 1 감소한다.', () => {
-//     const inputElement = screen.getByRole('input');
-//     userEvent.type(inputElement, '밥먹기');
+    const textElement = screen.getByText("저녁 먹기");
+    expect(textElement).not.toHaveStyle("text-decoration: line-through");
 
-//     // Enter
-//   })
+    const checkbox = screen.getByRole("checkbox");
+    userEvent.click(checkbox);
+    console.log(prettyDOM());
 
-//   test('Clear completed를 클릭하면, 아이템 글자위에 취소선이 그어진다. 남은 할일 아이템 숫자가 1 감소한다.', () => {
-//     const inputElement = screen.getByRole('input');
-//     userEvent.type(inputElement, '밥먹기');
+    expect(textElement).toHaveStyle("text-decoration: line-through");
+  });
 
-//     // Enter
-//   })
-
-// })
+  // test("Clear completed를 클릭하면, 아이템 글자위에 취소선이 그어진다. 남은 할일 아이템 숫자가 1 감소한다.", () => {
+  //   const inputElement = screen.getByRole("input");
+  //   userEvent.type(inputElement, "밥먹기");
+  //
+  //   // Enter
+  // });
+});
 
 // describe('할 일 필터', ()=> {
 

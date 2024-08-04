@@ -53,11 +53,20 @@ export default function TodoItem({ item }: TodoItemProp) {
         className="item-checkbox"
         type="checkbox"
         checked={isItemDone}
-        onChange={() => {
+        onChange={(e) => {
+          const checked = e.target.checked;
           setIsItemDone(!isItemDone);
+          setTodoList((prevTodos) => {
+            const updatedList = prevTodos.map((todo) =>
+              todo.id === item.id ? { ...todo, isDone: checked } : todo,
+            );
+            saveLocalStorage({ key: "todos", value: updatedList });
+            return updatedList;
+          });
         }}
       />
       <label
+        // TODO: classNames
         className={isEditMode ? "item-label-hidden" : "item-label"}
         htmlFor={item.id}
       >

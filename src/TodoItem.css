@@ -12,6 +12,12 @@
   padding: 8px;
 }
 
+.item-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
 .item-label {
   width: 100%;
   padding: 8px;
@@ -34,5 +40,10 @@
 }
 
 .item-close-button {
-  background-color: ;
+  width: 24px;
+  height: 24px;
+
+  border: 1px solid #000;
+  border-radius: 50%;
+  background-color: white;
 }
