@@ -2,6 +2,7 @@ import "./TodoItem.css";
 import { TodoItemType } from "./TodoContext";
 import { useEffect, useRef, useState } from "react";
 import { useTodoContext } from "./useTodoContext";
+import { saveLocalStorage } from "./localStorage";
 
 interface TodoItemProp {
   item: TodoItemType;
@@ -29,6 +30,7 @@ export default function TodoItem({ item }: TodoItemProp) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      <input className="item-checkbox" type="checkbox" />
       <label
         className={isEditMode ? "item-label-hidden" : "item-label"}
         htmlFor={item.id}
@@ -47,7 +49,11 @@ export default function TodoItem({ item }: TodoItemProp) {
       {isHovered ? (
         <button
           onClick={() =>
-            setTodoList((prev) => prev.filter((todo) => todo.id !== item.id))
+            setTodoList((prev) => {
+              const updatedList = prev.filter((todo) => todo.id !== item.id);
+              saveLocalStorage({ key: "todos", value: updatedList });
+              return updatedList;
+            })
           }
           className="item-close-button"
           data-testid="close-button"
