@@ -1,12 +1,14 @@
 import "./TodoItem.css";
 import { TodoItemType } from "./TodoContext";
 import { useEffect, useRef, useState } from "react";
+import { useTodoContext } from "./useTodoContext";
 
 interface TodoItemProp {
   item: TodoItemType;
 }
 
 export default function TodoItem({ item }: TodoItemProp) {
+  const { setTodoList } = useTodoContext();
   const [itemValue, setItemValue] = useState(item.title);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -43,7 +45,13 @@ export default function TodoItem({ item }: TodoItemProp) {
         onBlur={() => setIsEditMode(false)}
       />
       {isHovered ? (
-        <button className="item-close-button" data-testid="close-button">
+        <button
+          onClick={() =>
+            setTodoList((prev) => prev.filter((todo) => todo.id !== item.id))
+          }
+          className="item-close-button"
+          data-testid="close-button"
+        >
           X
         </button>
       ) : null}

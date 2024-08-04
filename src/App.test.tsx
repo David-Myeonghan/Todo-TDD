@@ -126,7 +126,9 @@ describe("할 일 삭제", () => {
     // Hover
     await userEvent.hover(screen.getByLabelText("button-container"));
 
-    // await new Promise(resolve => setTimeout(resolve, 100)) // 이것도 사용가능하지만, 제대로된 걸 사용하자..
+    // getBy -> 요소 없으면 에러.
+    // findBy -> 요소가 나타날 때까지 기다림. 요소 없으면 에러.
+    // queryBy -> 요소가 없을 때 null. 에러 발생 X
     const closeButton = await screen.findByTestId("close-button");
     expect(closeButton).toBeInTheDocument();
 
@@ -137,15 +139,22 @@ describe("할 일 삭제", () => {
     await waitFor(() => {
       expect(screen.queryByTestId("close-button")).toBeNull(); // data-testid
     });
-    console.log(prettyDOM());
   });
 
-  // test("X표를 클릭하면 아이템이 삭제되고 할일 목록이 사라진다.", () => {
-  //   const inputElement = screen.getByRole("input");
-  //   userEvent.type(inputElement, "밥먹기");
-  //
-  //   // Enter
-  // });
+  test("X표를 클릭하면 아이템이 삭제되고 할일 목록이 사라진다.", async () => {
+    render(<App />);
+
+    // Hover
+    await userEvent.hover(screen.getByText("저녁 먹기"));
+
+    // find close-button
+    const closeButton = await screen.findByTestId("close-button");
+    await userEvent.click(closeButton);
+
+    // ASSERT
+    expect(screen.queryByText("저녁 먹기")).toBeNull();
+    console.log(prettyDOM());
+  });
 });
 
 // describe('할 일 완료', ()=> {
