@@ -1,0 +1,24 @@
+.item {
+  width: 100%;
+  height: 60px;
+}
+
+.item-label {
+  padding: 8px;
+}
+
+.item-label-hidden {
+  display: none;
+}
+
+.item-input {
+  width: 100%;
+
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 20px;
+}
+
+.item-input-hidden {
+  display: none;
+}

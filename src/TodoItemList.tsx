@@ -1,12 +1,15 @@
-import {useTodoContext} from "./useTodoContext";
+import "./TodoItemList.css";
+import { useTodoContext } from "./useTodoContext";
+import TodoItem from "./TodoItem";
 
 export default function TodoItemList() {
-    const {todoList} = useTodoContext();
-    console.log(todoList)
+  const { todoList } = useTodoContext();
 
-    return (
-        <div className='item-list'>
-            {todoList.map(item => (<div className='item' key={item.title}><span>{item.title}</span></div>))}
-        </div>
-    )
+  return (
+    <div className="item-list">
+      {todoList.map((item) => (
+        <TodoItem key={item.id} item={item} />
+      ))}
+    </div>
+  );
 }
