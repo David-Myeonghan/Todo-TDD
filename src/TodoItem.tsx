@@ -9,6 +9,7 @@ interface TodoItemProp {
 export default function TodoItem({ item }: TodoItemProp) {
   const [itemValue, setItemValue] = useState(item.title);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -20,8 +21,11 @@ export default function TodoItem({ item }: TodoItemProp) {
   return (
     <div
       className="item"
+      aria-label="button-container"
       key={item.title}
       onDoubleClick={() => setIsEditMode(true)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <label
         className={isEditMode ? "item-label-hidden" : "item-label"}
@@ -38,6 +42,11 @@ export default function TodoItem({ item }: TodoItemProp) {
         onChange={(e) => setItemValue(e.target.value)}
         onBlur={() => setIsEditMode(false)}
       />
+      {isHovered ? (
+        <button className="item-close-button" data-testid="close-button">
+          X
+        </button>
+      ) : null}
     </div>
   );
 }
