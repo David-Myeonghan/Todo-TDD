@@ -67,6 +67,7 @@ export default function TodoItem({ item }: TodoItemProp) {
         }}
       />
       <label
+        data-testId={"todoItem"}
         className={cx({
           "item-label-hidden": isEditMode,
           "item-label": !isEditMode,

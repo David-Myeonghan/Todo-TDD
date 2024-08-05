@@ -1,15 +1,9 @@
 import React from "react";
-import {
-  cleanup,
-  prettyDOM,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { prettyDOM, render, screen, waitFor } from "@testing-library/react";
 import App from "./App";
 import userEvent from "@testing-library/user-event";
 
-afterEach(cleanup);
+// beforeEach(() => localStorage.clear());
 
 describe("초기 렌더링", () => {
   test('인풋창이 렌더링 되고, "What needs to be done?" 문구가 placeholder에 보인다.', () => {
@@ -173,7 +167,6 @@ describe("할 일 완료", () => {
   //   const labelText = screen.getByText("저녁 먹기");
   //   expect(labelText).toHaveClass("strike-through");
   // });
-
   test("Clear completed 를 클릭하면, 완료된 할 일 아이템이 사라진다. (남은 할일 아이템 숫자가 1 감소한다.)", async () => {
     render(<App />);
     const inputElement = screen.getByPlaceholderText("What needs to be done?");
@@ -186,8 +179,6 @@ describe("할 일 완료", () => {
     const checkbox = await screen.findByRole("checkbox");
     await userEvent.click(checkbox);
     expect(checkbox).toBeChecked();
-    console.log(prettyDOM());
-
     const clearButton = screen.getByText("Clear completed");
     userEvent.click(clearButton);
 
@@ -195,29 +186,84 @@ describe("할 일 완료", () => {
   });
 });
 
-// describe('할 일 필터', ()=> {
+describe("할 일 필터", () => {
+  // test("Active 버튼을 클릭하면 완료되지 않은 아이템만 보인다.", async () => {
+  // cleanup();
+  //   render(<App />);
+  //
+  //   const inputElement = screen.getByPlaceholderText("What needs to be done?");
+  //   await userEvent.type(inputElement, "아침 먹기");
+  //   await userEvent.type(inputElement, "{enter}");
+  //
+  //   await userEvent.type(inputElement, "저녁 먹기");
+  //   await userEvent.type(inputElement, "{enter}");
+  //
+  //   const todoItemList = screen.getAllByTestId("todoItem");
+  //   expect(todoItemList.length).toBe(2);
+  //
+  //   const checkboxList = screen.getAllByRole("checkbox");
+  //   userEvent.click(checkboxList[0]);
+  //   expect(checkboxList[0]).toBeChecked();
+  //
+  //   const activeButton = screen.getByText("Active");
+  //   await userEvent.click(activeButton);
+  //
+  //   const updatedItemList = await screen.findAllByTestId("todoItem");
+  //
+  //   expect(updatedItemList.length).toBe(1);
+  // });
 
-//   render(<App />);
+  test("Completed 버튼을 클릭하면 완료한 아이템만 보인다.", async () => {
+    localStorage.clear();
+    render(<App />);
 
-//   test('Active 필터를 클릭하면 완료되지 않은 아이템만 보인다.', () => {
-//     const inputElement = screen.getByRole('input');
-//     userEvent.type(inputElement, '밥먹기');
+    const inputElement = screen.getByPlaceholderText("What needs to be done?");
+    await userEvent.type(inputElement, "아침 먹기");
+    await userEvent.type(inputElement, "{enter}");
 
-//     // Enter
-//   })
+    await userEvent.type(inputElement, "저녁 먹기");
+    await userEvent.type(inputElement, "{enter}");
 
-//   test('Completed 필터를 클릭하면 완료한 아이템만 보인다.', () => {
-//     const inputElement = screen.getByRole('input');
-//     userEvent.type(inputElement, '밥먹기');
+    const todoItemList = screen.getAllByTestId("todoItem");
+    expect(todoItemList.length).toBe(2);
 
-//     // Enter
-//   })
+    const checkboxList = screen.getAllByRole("checkbox");
+    userEvent.click(checkboxList[0]);
+    expect(checkboxList[0]).toBeChecked();
 
-//   test('다시 All 필터를 클릭하면 모든 아이템이 보인다.', () => {
-//     const inputElement = screen.getByRole('input');
-//     userEvent.type(inputElement, '밥먹기');
+    const completedButton = screen.getByText("Completed");
+    userEvent.click(completedButton);
 
-//     // Enter
-//   })
+    const updatedTodoItemList = screen.getAllByTestId("todoItem");
+    expect(updatedTodoItemList.length).toBe(1);
 
-// })
+    console.log(prettyDOM());
+  });
+  //
+  test("다시 ALL 버튼을 클릭하면 완료한 아이템만 보인다.", async () => {
+    localStorage.clear();
+    render(<App />);
+
+    const inputElement = screen.getByPlaceholderText("What needs to be done?");
+    await userEvent.type(inputElement, "아침 먹기");
+    await userEvent.type(inputElement, "{enter}");
+
+    await userEvent.type(inputElement, "저녁 먹기");
+    await userEvent.type(inputElement, "{enter}");
+
+    const todoItemList = screen.getAllByTestId("todoItem");
+    expect(todoItemList.length).toBe(2);
+
+    const checkboxList = screen.getAllByRole("checkbox");
+    userEvent.click(checkboxList[0]);
+    expect(checkboxList[0]).toBeChecked();
+
+    const allButton = screen.getByText("All");
+    userEvent.click(allButton);
+
+    const updatedTodoItemList = screen.getAllByTestId("todoItem");
+    expect(updatedTodoItemList.length).toBe(2);
+
+    console.log(prettyDOM());
+  });
+});
