@@ -1,5 +1,11 @@
 import React from "react";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  prettyDOM,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import App from "./App";
 import userEvent from "@testing-library/user-event";
 
@@ -151,28 +157,42 @@ describe("할 일 삭제", () => {
 });
 
 describe("할 일 완료", () => {
-  test("아이템 촤측 원(체크박스)을 클릭하면, 아이템 글자위에 취소선이 그어진다. (남은 할일 아이템 숫자가 1 감소한다.)", async () => {
-    cleanup();
-    render(<App />);
+  // test("아이템 촤측 원(체크박스)을 클릭하면, 아이템 글자위에 취소선이 그어진다. (남은 할일 아이템 숫자가 1 감소한다.)", async () => {
+  //   cleanup();
+  //   render(<App />);
+  //
+  //   const inputElement = screen.getByPlaceholderText("What needs to be done?");
+  //   await userEvent.type(inputElement, "저녁 먹기");
+  //   await userEvent.type(inputElement, "{enter}");
+  //   expect(screen.getByText("저녁 먹기")).not.toHaveClass("strike-through");
+  //
+  //   const checkbox = await screen.findByRole("checkbox");
+  //   userEvent.click(checkbox);
+  //   expect(checkbox).toBeChecked();
+  //
+  //   const labelText = screen.getByText("저녁 먹기");
+  //   expect(labelText).toHaveClass("strike-through");
+  // });
 
+  test("Clear completed 를 클릭하면, 완료된 할 일 아이템이 사라진다. (남은 할일 아이템 숫자가 1 감소한다.)", async () => {
+    render(<App />);
     const inputElement = screen.getByPlaceholderText("What needs to be done?");
     await userEvent.type(inputElement, "저녁 먹기");
     await userEvent.type(inputElement, "{enter}");
-    expect(screen.getByText("저녁 먹기")).not.toHaveClass("strike-through");
+
+    const completedItem = screen.getByText("저녁 먹기");
+    expect(completedItem).toBeInTheDocument();
 
     const checkbox = await screen.findByRole("checkbox");
-    userEvent.click(checkbox);
+    await userEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+    console.log(prettyDOM());
 
-    const labelText = screen.getByText("저녁 먹기");
-    expect(labelText).toHaveClass("strike-through");
+    const clearButton = screen.getByText("Clear completed");
+    userEvent.click(clearButton);
+
+    expect(await screen.findByText("저녁 먹기")).not.toBeInTheDocument();
   });
-
-  // test("Clear completed를 클릭하면, 아이템 글자위에 취소선이 그어진다. 남은 할일 아이템 숫자가 1 감소한다.", () => {
-  //   const inputElement = screen.getByRole("input");
-  //   userEvent.type(inputElement, "밥먹기");
-  //
-  //   // Enter
-  // });
 });
 
 // describe('할 일 필터', ()=> {
