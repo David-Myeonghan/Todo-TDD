@@ -11,8 +11,6 @@ export default function TodoFilter() {
 
   if (todoList.length === 0) return null;
 
-  // console.log(getLocalStorageItem("todos"));
-
   return (
     <div className={cx("filter-box")}>
       <div>

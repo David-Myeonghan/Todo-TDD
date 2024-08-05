@@ -13,16 +13,17 @@ interface TodoItemProp {
 
 export default function TodoItem({ item }: TodoItemProp) {
   const { setTodoList } = useTodoContext();
-  const [itemTitleValue, setItemTitleValue] = useState(item.title);
+
   const [isEditMode, setIsEditMode] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleEnterPressed = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const value = (e.target as HTMLInputElement).value;
     if (e.key === "Enter") {
       setTodoList((prev) => {
         const updatedList = prev.map((todo) =>
-          todo.id === item.id ? { ...todo, title: itemTitleValue } : todo,
+          todo.id === item.id ? { ...todo, title: value } : todo,
         );
         saveLocalStorage({
           key: "todos",
@@ -35,8 +36,6 @@ export default function TodoItem({ item }: TodoItemProp) {
   };
 
   useEffect(() => {
-    if (isEditMode) {
-    }
     if (isEditMode && inputRef.current) {
       inputRef.current.focus();
     }
@@ -67,7 +66,7 @@ export default function TodoItem({ item }: TodoItemProp) {
         }}
       />
       <label
-        data-testId={"todoItem"}
+        data-testid={"todoItem"}
         className={cx({
           "item-label-hidden": isEditMode,
           "item-label": !isEditMode,
@@ -75,7 +74,7 @@ export default function TodoItem({ item }: TodoItemProp) {
         })}
         htmlFor={item.id}
       >
-        {itemTitleValue}
+        {item.title}
       </label>
       <input
         ref={inputRef}
@@ -85,8 +84,7 @@ export default function TodoItem({ item }: TodoItemProp) {
           "item-input": isEditMode,
           "item-input-hidden": !isEditMode,
         })}
-        value={itemTitleValue}
-        onChange={(e) => setItemTitleValue(e.target.value)}
+        defaultValue={item.title}
         onKeyDown={handleEnterPressed}
         onBlur={() => setIsEditMode(false)}
       />
