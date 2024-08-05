@@ -1,7 +1,7 @@
-import { TodoItemType } from "./TodoContext";
+import { TodoItemType } from "../context/TodoContext";
 import { useEffect, useRef, useState } from "react";
-import { useTodoContext } from "./useTodoContext";
-import { saveLocalStorage } from "./localStorage";
+import { useTodoContext } from "../context/useTodoContext";
+import { saveLocalStorage } from "../utils/localStorage";
 import classNames from "classnames/bind";
 import styles from "./TodoItem.module.css";
 

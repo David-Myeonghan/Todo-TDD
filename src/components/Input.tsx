@@ -1,7 +1,7 @@
 import "./Input.css";
 import React, { useState } from "react";
-import { useTodoContext } from "./useTodoContext";
-import { saveLocalStorage } from "./localStorage";
+import { useTodoContext } from "../context/useTodoContext";
+import { saveLocalStorage } from "../utils/localStorage";
 
 export default function Input() {
   const { todoList, setTodoList } = useTodoContext();

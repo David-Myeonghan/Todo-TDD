@@ -1,8 +1,8 @@
 import React from "react";
 import "./App.css";
-import { TodoContextProvider } from "./TodoContext";
-import Input from "./Input";
-import TodoItemList from "./TodoItemList";
+import { TodoContextProvider } from "./context/TodoContext";
+import Input from "./components/Input";
+import TodoItemList from "./components/TodoItemList";
 
 function App() {
   return (

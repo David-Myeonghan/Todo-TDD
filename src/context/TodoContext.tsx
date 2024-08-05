@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { getLocalStorageItem } from "./localStorage";
+import { getLocalStorageItem } from "../utils/localStorage";
 
 export type TodoItemType = {
   id: string;

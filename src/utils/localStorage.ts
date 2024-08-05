@@ -1,4 +1,4 @@
-import { TodoList } from "./TodoContext";
+import { TodoList } from "../context/TodoContext";
 
 export const saveLocalStorage = ({
   key = "todos",
