@@ -1,8 +1,11 @@
-import "./TodoItem.css";
 import { TodoItemType } from "./TodoContext";
 import { useEffect, useRef, useState } from "react";
 import { useTodoContext } from "./useTodoContext";
 import { saveLocalStorage } from "./localStorage";
+import classNames from "classnames/bind";
+import styles from "./TodoItem.module.css";
+
+const cx = classNames.bind(styles);
 
 interface TodoItemProp {
   item: TodoItemType;
@@ -11,7 +14,6 @@ interface TodoItemProp {
 export default function TodoItem({ item }: TodoItemProp) {
   const { setTodoList } = useTodoContext();
   const [itemTitleValue, setItemTitleValue] = useState(item.title);
-  const [isItemDone, setIsItemDone] = useState(item.isDone);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -42,7 +44,7 @@ export default function TodoItem({ item }: TodoItemProp) {
 
   return (
     <div
-      className="item"
+      className={cx("item")}
       aria-label="button-container"
       key={item.title}
       onDoubleClick={() => setIsEditMode(true)}
@@ -50,12 +52,11 @@ export default function TodoItem({ item }: TodoItemProp) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <input
-        className="item-checkbox"
+        className={cx("item-checkbox")}
         type="checkbox"
-        checked={isItemDone}
+        checked={item.isDone}
         onChange={(e) => {
           const checked = e.target.checked;
-          setIsItemDone(!isItemDone);
           setTodoList((prevTodos) => {
             const updatedList = prevTodos.map((todo) =>
               todo.id === item.id ? { ...todo, isDone: checked } : todo,
@@ -66,8 +67,11 @@ export default function TodoItem({ item }: TodoItemProp) {
         }}
       />
       <label
-        // TODO: classNames
-        className={isEditMode ? "item-label-hidden" : "item-label"}
+        className={cx({
+          "item-label-hidden": isEditMode,
+          "item-label": !isEditMode,
+          "strike-through": item.isDone,
+        })}
         htmlFor={item.id}
       >
         {itemTitleValue}
@@ -76,27 +80,32 @@ export default function TodoItem({ item }: TodoItemProp) {
         ref={inputRef}
         id={item.id}
         type="text"
-        className={isEditMode ? "item-input" : "item-input-hidden"}
+        className={cx({
+          "item-input": isEditMode,
+          "item-input-hidden": !isEditMode,
+        })}
         value={itemTitleValue}
         onChange={(e) => setItemTitleValue(e.target.value)}
         onKeyDown={handleEnterPressed}
         onBlur={() => setIsEditMode(false)}
       />
-      {isHovered ? (
-        <button
-          onClick={() =>
-            setTodoList((prev) => {
-              const updatedList = prev.filter((todo) => todo.id !== item.id);
-              saveLocalStorage({ key: "todos", value: updatedList });
-              return updatedList;
-            })
-          }
-          className="item-close-button"
-          data-testid="close-button"
-        >
-          X
-        </button>
-      ) : null}
+      <div className={cx("button-box")}>
+        {isHovered ? (
+          <button
+            onClick={() =>
+              setTodoList((prev) => {
+                const updatedList = prev.filter((todo) => todo.id !== item.id);
+                saveLocalStorage({ key: "todos", value: updatedList });
+                return updatedList;
+              })
+            }
+            className={cx("item-close-button")}
+            data-testid="close-button"
+          >
+            X
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }

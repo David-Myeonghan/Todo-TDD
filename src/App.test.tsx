@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  cleanup,
-  prettyDOM,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import App from "./App";
 import userEvent from "@testing-library/user-event";
 
@@ -164,15 +158,13 @@ describe("할 일 완료", () => {
     const inputElement = screen.getByPlaceholderText("What needs to be done?");
     await userEvent.type(inputElement, "저녁 먹기");
     await userEvent.type(inputElement, "{enter}");
+    expect(screen.getByText("저녁 먹기")).not.toHaveClass("strike-through");
 
-    const textElement = screen.getByText("저녁 먹기");
-    expect(textElement).not.toHaveStyle("text-decoration: line-through");
-
-    const checkbox = screen.getByRole("checkbox");
+    const checkbox = await screen.findByRole("checkbox");
     userEvent.click(checkbox);
-    console.log(prettyDOM());
 
-    expect(textElement).toHaveStyle("text-decoration: line-through");
+    const labelText = screen.getByText("저녁 먹기");
+    expect(labelText).toHaveClass("strike-through");
   });
 
   // test("Clear completed를 클릭하면, 아이템 글자위에 취소선이 그어진다. 남은 할일 아이템 숫자가 1 감소한다.", () => {
