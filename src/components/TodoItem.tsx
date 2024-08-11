@@ -1,7 +1,7 @@
 import { TodoItemType } from "../context/TodoContext";
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useTodoContext } from "../context/useTodoContext";
-import { saveLocalStorage } from "../utils/localStorage";
+import { getLocalStorageItem, saveLocalStorage } from "../utils/localStorage";
 import classNames from "classnames/bind";
 import styles from "./TodoItem.module.css";
 
@@ -12,27 +12,43 @@ interface TodoItemProp {
 }
 
 export default function TodoItem({ item }: TodoItemProp) {
-  const { setTodoList } = useTodoContext();
+  const { todoList, setTodoList } = useTodoContext();
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // TODO: 함수들 아이템 많아도 한번만 생성되도록 변경
+
+  const handleItemDoneClick = (e: ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    const updatedList = todoList.map((todo) =>
+      todo.id === item.id ? { ...todo, isDone: checked } : todo,
+    );
+    saveLocalStorage({ key: "todos", value: updatedList });
+    // Update
+    setTodoList(getLocalStorageItem("todos"));
+  };
+
   const handleEnterPressed = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const value = (e.target as HTMLInputElement).value;
-    if (e.key === "Enter") {
-      setTodoList((prev) => {
-        const updatedList = prev.map((todo) =>
-          todo.id === item.id ? { ...todo, title: value } : todo,
-        );
-        saveLocalStorage({
-          key: "todos",
-          value: updatedList,
-        });
-        return updatedList;
-      });
+    if (e.key === "Enter" && value !== "") {
+      const updatedList = todoList.map((todo) =>
+        todo.id === item.id ? { ...todo, title: value } : todo,
+      );
+      saveLocalStorage({ key: "todos", value: updatedList });
       setIsEditMode(false);
+
+      // Refresh
+      setTodoList(getLocalStorageItem("todos"));
     }
+  };
+
+  const handleRemoveClick = () => {
+    const updatedList = todoList.filter((todo) => todo.id !== item.id);
+    saveLocalStorage({ key: "todos", value: updatedList });
+    // Refresh
+    setTodoList(getLocalStorageItem("todos"));
   };
 
   useEffect(() => {
@@ -54,16 +70,7 @@ export default function TodoItem({ item }: TodoItemProp) {
         className={cx("item-checkbox")}
         type="checkbox"
         checked={item.isDone}
-        onChange={(e) => {
-          const checked = e.target.checked;
-          setTodoList((prevTodos) => {
-            const updatedList = prevTodos.map((todo) =>
-              todo.id === item.id ? { ...todo, isDone: checked } : todo,
-            );
-            saveLocalStorage({ key: "todos", value: updatedList });
-            return updatedList;
-          });
-        }}
+        onChange={handleItemDoneClick}
       />
       <label
         data-testid={"todoItem"}
@@ -91,13 +98,7 @@ export default function TodoItem({ item }: TodoItemProp) {
       <div className={cx("button-box")}>
         {isHovered ? (
           <button
-            onClick={() =>
-              setTodoList((prev) => {
-                const updatedList = prev.filter((todo) => todo.id !== item.id);
-                saveLocalStorage({ key: "todos", value: updatedList });
-                return updatedList;
-              })
-            }
+            onClick={handleRemoveClick}
             className={cx("item-close-button")}
             data-testid="close-button"
           >
