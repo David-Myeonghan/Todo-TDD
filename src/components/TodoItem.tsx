@@ -1,7 +1,5 @@
 import { TodoItemType } from "../context/TodoContext";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { useTodoContext } from "../context/useTodoContext";
-import { getLocalStorageItem, saveLocalStorage } from "../utils/localStorage";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./TodoItem.module.css";
 
@@ -9,47 +7,24 @@ const cx = classNames.bind(styles);
 
 interface TodoItemProp {
   item: TodoItemType;
+  onItemDoneClick: (e: ChangeEvent<HTMLInputElement>, id: string) => void;
+  onEnterPressed: (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    id: string,
+  ) => void;
+  onRemoveClick: (id: string) => void;
 }
 
-export default function TodoItem({ item }: TodoItemProp) {
-  const { todoList, setTodoList } = useTodoContext();
-
+export default function TodoItem({
+  item,
+  onItemDoneClick,
+  onEnterPressed,
+  onRemoveClick,
+}: TodoItemProp) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // TODO: 함수들 아이템 많아도 한번만 생성되도록 변경
-
-  const handleItemDoneClick = (e: ChangeEvent<HTMLInputElement>) => {
-    const checked = e.target.checked;
-    const updatedList = todoList.map((todo) =>
-      todo.id === item.id ? { ...todo, isDone: checked } : todo,
-    );
-    saveLocalStorage({ key: "todos", value: updatedList });
-    // Update
-    setTodoList(getLocalStorageItem("todos"));
-  };
-
-  const handleEnterPressed = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const value = (e.target as HTMLInputElement).value;
-    if (e.key === "Enter" && value !== "") {
-      const updatedList = todoList.map((todo) =>
-        todo.id === item.id ? { ...todo, title: value } : todo,
-      );
-      saveLocalStorage({ key: "todos", value: updatedList });
-      setIsEditMode(false);
-
-      // Refresh
-      setTodoList(getLocalStorageItem("todos"));
-    }
-  };
-
-  const handleRemoveClick = () => {
-    const updatedList = todoList.filter((todo) => todo.id !== item.id);
-    saveLocalStorage({ key: "todos", value: updatedList });
-    // Refresh
-    setTodoList(getLocalStorageItem("todos"));
-  };
+  // UI 관련은 item 내부에서 관리
 
   useEffect(() => {
     if (isEditMode && inputRef.current) {
@@ -70,7 +45,7 @@ export default function TodoItem({ item }: TodoItemProp) {
         className={cx("item-checkbox")}
         type="checkbox"
         checked={item.isDone}
-        onChange={handleItemDoneClick}
+        onChange={(e) => onItemDoneClick(e, item.id)}
       />
       <label
         data-testid={"todoItem"}
@@ -92,13 +67,16 @@ export default function TodoItem({ item }: TodoItemProp) {
           "item-input-hidden": !isEditMode,
         })}
         defaultValue={item.title}
-        onKeyDown={handleEnterPressed}
+        onKeyDown={(e) => {
+          onEnterPressed(e, item.id);
+          setIsEditMode(false);
+        }}
         onBlur={() => setIsEditMode(false)}
       />
       <div className={cx("button-box")}>
         {isHovered ? (
           <button
-            onClick={handleRemoveClick}
+            onClick={(_e) => onRemoveClick(item.id)}
             className={cx("item-close-button")}
             data-testid="close-button"
           >
