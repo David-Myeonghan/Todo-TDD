@@ -73,7 +73,12 @@ export default function TodoItem({
             setIsEditMode(false);
           }
         }}
-        onBlur={() => setIsEditMode(false)}
+        onBlur={() => {
+          if (inputRef.current) {
+            inputRef.current.value = item.title;
+          }
+          setIsEditMode(false);
+        }}
       />
       <div className={cx("button-box")}>
         {isHovered ? (
