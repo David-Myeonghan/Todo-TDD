@@ -68,8 +68,10 @@ export default function TodoItem({
         })}
         defaultValue={item.title}
         onKeyDown={(e) => {
-          onEnterPressed(e, item.id);
-          setIsEditMode(false);
+          if (e.key === "Enter") {
+            onEnterPressed(e, item.id);
+            setIsEditMode(false);
+          }
         }}
         onBlur={() => setIsEditMode(false)}
       />

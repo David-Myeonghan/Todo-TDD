@@ -25,7 +25,7 @@ export default function TodoItemList() {
     id: string,
   ) => {
     const value = (e.target as HTMLInputElement).value;
-    if (e.key === "Enter" && value !== "") {
+    if (value !== "") {
       const updatedList = todoList.map((todo) =>
         todo.id === id ? { ...todo, title: value } : todo,
       );
