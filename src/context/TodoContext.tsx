@@ -1,5 +1,12 @@
-import React, { createContext, SetStateAction, useState } from "react";
+import React, {
+  createContext,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { getLocalStorageItem } from "../utils/localStorage";
+import { database } from "../firebase.config";
+import { getDb } from "../firebase";
 
 export type TodoItemType = {
   id: string;
@@ -27,6 +34,12 @@ export const TodoContextProvider = ({
   const [todoList, setTodoList] = useState<TodoList>(
     () => getLocalStorageItem("todos", []), // 초기에 한번만 가져오도록. 서버 DB 라고 생각.
   );
+
+  console.log(database);
+
+  useEffect(() => {
+    getDb().then((res) => console.log(res));
+  }, []);
 
   return (
     <TodoContext.Provider value={{ todoList, setTodoList }}>
