@@ -1,7 +1,5 @@
 import { TodoItemType } from "../context/TodoContext";
-import { useEffect, useRef, useState } from "react";
-import { useTodoContext } from "../context/useTodoContext";
-import { saveLocalStorage } from "../utils/localStorage";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./TodoItem.module.css";
 
@@ -9,31 +7,24 @@ const cx = classNames.bind(styles);
 
 interface TodoItemProp {
   item: TodoItemType;
+  onItemDoneClick: (e: ChangeEvent<HTMLInputElement>, id: string) => void;
+  onEnterPressed: (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    id: string,
+  ) => void;
+  onRemoveClick: (id: string) => void;
 }
 
-export default function TodoItem({ item }: TodoItemProp) {
-  const { setTodoList } = useTodoContext();
-
+export default function TodoItem({
+  item,
+  onItemDoneClick,
+  onEnterPressed,
+  onRemoveClick,
+}: TodoItemProp) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleEnterPressed = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const value = (e.target as HTMLInputElement).value;
-    if (e.key === "Enter") {
-      setTodoList((prev) => {
-        const updatedList = prev.map((todo) =>
-          todo.id === item.id ? { ...todo, title: value } : todo,
-        );
-        saveLocalStorage({
-          key: "todos",
-          value: updatedList,
-        });
-        return updatedList;
-      });
-      setIsEditMode(false);
-    }
-  };
+  // UI 관련은 item 내부에서 관리
 
   useEffect(() => {
     if (isEditMode && inputRef.current) {
@@ -54,16 +45,7 @@ export default function TodoItem({ item }: TodoItemProp) {
         className={cx("item-checkbox")}
         type="checkbox"
         checked={item.isDone}
-        onChange={(e) => {
-          const checked = e.target.checked;
-          setTodoList((prevTodos) => {
-            const updatedList = prevTodos.map((todo) =>
-              todo.id === item.id ? { ...todo, isDone: checked } : todo,
-            );
-            saveLocalStorage({ key: "todos", value: updatedList });
-            return updatedList;
-          });
-        }}
+        onChange={(e) => onItemDoneClick(e, item.id)}
       />
       <label
         data-testid={"todoItem"}
@@ -85,19 +67,23 @@ export default function TodoItem({ item }: TodoItemProp) {
           "item-input-hidden": !isEditMode,
         })}
         defaultValue={item.title}
-        onKeyDown={handleEnterPressed}
-        onBlur={() => setIsEditMode(false)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onEnterPressed(e, item.id);
+            setIsEditMode(false);
+          }
+        }}
+        onBlur={() => {
+          if (inputRef.current) {
+            inputRef.current.value = item.title;
+          }
+          setIsEditMode(false);
+        }}
       />
       <div className={cx("button-box")}>
         {isHovered ? (
           <button
-            onClick={() =>
-              setTodoList((prev) => {
-                const updatedList = prev.filter((todo) => todo.id !== item.id);
-                saveLocalStorage({ key: "todos", value: updatedList });
-                return updatedList;
-              })
-            }
+            onClick={(_e) => onRemoveClick(item.id)}
             className={cx("item-close-button")}
             data-testid="close-button"
           >
