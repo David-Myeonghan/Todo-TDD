@@ -2,6 +2,7 @@ import "./Input.css";
 import React, { useCallback, useState } from "react";
 import { useTodoContext } from "../context/useTodoContext";
 import { getLocalStorageItem, saveLocalStorage } from "../utils/localStorage";
+import { modifyTotoItem, getTodos } from "../firebase";
 
 export default function Input() {
   const { todoList, setTodoList } = useTodoContext();
@@ -17,11 +18,10 @@ export default function Input() {
           title: inputValue,
           isDone: false,
         };
-        saveLocalStorage({ key: "todos", value: [...todoList, newTodo] });
+        modifyTotoItem(newTodo).then((res) => console.log(res));
         setInputValue("");
-
         // onSuccess Refresh - get data from server DB
-        setTodoList(getLocalStorageItem("todos"));
+        getTodos().then((res) => setTodoList(res));
       }
     },
     [inputValue, todoList],

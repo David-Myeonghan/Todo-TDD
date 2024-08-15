@@ -5,8 +5,8 @@ import React, {
   useState,
 } from "react";
 import { getLocalStorageItem } from "../utils/localStorage";
-import { database } from "../firebase.config";
-import { getDb } from "../firebase";
+import { db, getTodos } from "../firebase";
+import { onValue, ref } from "firebase/database";
 
 export type TodoItemType = {
   id: string;
@@ -25,20 +25,33 @@ export const TodoContext = createContext<TodoContextType | undefined>(
   undefined,
 );
 
+const starCountRef = ref(db, "/todos");
+
 // Prop drilling 해결 용도
 export const TodoContextProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const [todoList, setTodoList] = useState<TodoList>(
-    () => getLocalStorageItem("todos", []), // 초기에 한번만 가져오도록. 서버 DB 라고 생각.
-  );
-
-  console.log(database);
+  const [todoList, setTodoList] = useState<TodoList>([]);
+  console.log("when", todoList);
 
   useEffect(() => {
-    getDb().then((res) => console.log(res));
+    // onValue(starCountRef, (snapshot) => {
+    //   const data = snapshot.val();
+    //   console.log(data);
+    //   setTodoList(data);
+    // });
+    getTodos().then((res) => {
+      console.log(res);
+      const todoArray = Object.keys(res).map((key) => ({
+        id: key,
+        ...res[key],
+      }));
+      console.log(res);
+      console.log(todoArray);
+      setTodoList(todoArray);
+    });
   }, []);
 
   return (

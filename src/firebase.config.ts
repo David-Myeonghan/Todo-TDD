@@ -1,8 +1,8 @@
-import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
+import { initializeApp } from "firebase/app";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyBTogEWquT9Oa5rDDDRi0idwSyy4rctB-k",
   authDomain: "todo-tdd-28906.firebaseapp.com",
   databaseURL: "https://todo-tdd-28906-default-rtdb.firebaseio.com",

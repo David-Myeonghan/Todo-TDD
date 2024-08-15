@@ -4,6 +4,10 @@ import { TodoContextProvider } from "./context/TodoContext";
 import Input from "./components/Input";
 import TodoItemList from "./components/TodoItemList";
 import TodoFilter from "./components/TodoFilter";
+import { initializeApp } from "firebase/app";
+import { firebaseConfig } from "./firebase.config";
+
+initializeApp(firebaseConfig);
 
 function App() {
   return (

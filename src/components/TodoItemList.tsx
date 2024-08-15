@@ -2,7 +2,8 @@ import "./TodoItemList.css";
 import { useTodoContext } from "../context/useTodoContext";
 import TodoItem from "./TodoItem";
 import React, { ChangeEvent } from "react";
-import { getLocalStorageItem, saveLocalStorage } from "../utils/localStorage";
+import { modifyTotoItem, getTodos, deleteTodoItem } from "../firebase";
+import { TodoItemType } from "../context/TodoContext";
 
 export default function TodoItemList() {
   const { todoList, setTodoList } = useTodoContext();
@@ -12,12 +13,11 @@ export default function TodoItemList() {
     id: string,
   ) => {
     const checked = e.target.checked;
-    const updatedList = todoList.map((todo) =>
-      todo.id === id ? { ...todo, isDone: checked } : todo,
-    );
-    saveLocalStorage({ key: "todos", value: updatedList });
+    const item = todoList.find((todo) => todo.id === id);
+    const modified = { ...item, isDone: checked } as TodoItemType;
+    modifyTotoItem(modified);
     // Refresh
-    setTodoList(getLocalStorageItem("todos"));
+    getTodos().then((res) => setTodoList(res));
   };
 
   const handleEnterPressed = (
@@ -29,22 +29,23 @@ export default function TodoItemList() {
       const updatedList = todoList.map((todo) =>
         todo.id === id ? { ...todo, title: value } : todo,
       );
-      saveLocalStorage({ key: "todos", value: updatedList });
+      const item = todoList.find((todo) => todo.id === id);
+      const modified = { ...item, title: value } as TodoItemType;
+      modifyTotoItem(modified);
       // Refresh
-      setTodoList(getLocalStorageItem("todos"));
+      getTodos().then((res) => setTodoList(res));
     }
   };
 
   const handleRemoveClick = (id: string) => {
-    const updatedList = todoList.filter((todo) => todo.id !== id);
-    saveLocalStorage({ key: "todos", value: updatedList });
+    deleteTodoItem(id);
     // Refresh
-    setTodoList(getLocalStorageItem("todos"));
+    getTodos().then((res) => setTodoList(res));
   };
 
   return (
     <div className="item-list">
-      {todoList.map((item) => (
+      {todoList?.map((item) => (
         <TodoItem
           key={item.id}
           item={item}
