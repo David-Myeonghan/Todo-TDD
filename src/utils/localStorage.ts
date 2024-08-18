@@ -10,8 +10,9 @@ export const saveLocalStorage = ({
   localStorage.setItem(key, JSON.stringify(value));
 };
 
-export const getLocalStorageItem = (key: string) => {
-  const item = localStorage.getItem(key || "todos");
-  if (!item) return;
+export const getLocalStorageItem = <T>(key: string, defaultValue?: T) => {
+  const item = localStorage.getItem(key);
+  if (!item) return defaultValue;
   return JSON.parse(item);
+  // try-catch 사용해서 catch 에서 return defaultValue;
 };

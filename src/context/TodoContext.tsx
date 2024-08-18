@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  SetStateAction,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { createContext, SetStateAction, useState } from "react";
 import { getLocalStorageItem } from "../utils/localStorage";
 
 export type TodoItemType = {
@@ -24,6 +18,7 @@ export const TodoContext = createContext<TodoContextType | undefined>(
   undefined,
 );
 
+// Prop drilling 해결 용도
 export const TodoContextProvider = ({
   children,
 }: {
@@ -31,13 +26,9 @@ export const TodoContextProvider = ({
 }) => {
   const [todoList, setTodoList] = useState<TodoList>([]);
 
-  useEffect(() => {
-    const storageTodos = getLocalStorageItem("todos");
-    if (!storageTodos) return;
-    setTodoList(storageTodos);
-  }, []);
-
-  const value = useMemo(() => ({ todoList, setTodoList }), [todoList]);
-
-  return <TodoContext.Provider value={value}>{children}</TodoContext.Provider>;
+  return (
+    <TodoContext.Provider value={{ todoList, setTodoList }}>
+      {children}
+    </TodoContext.Provider>
+  );
 };
