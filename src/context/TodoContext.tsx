@@ -24,9 +24,7 @@ export const TodoContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [todoList, setTodoList] = useState<TodoList>(
-    () => getLocalStorageItem("todos", []), // 초기에 한번만 가져오도록. 서버 DB 라고 생각.
-  );
+  const [todoList, setTodoList] = useState<TodoList>([]);
 
   return (
     <TodoContext.Provider value={{ todoList, setTodoList }}>
